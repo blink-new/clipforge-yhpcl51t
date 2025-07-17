@@ -21,8 +21,19 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Filter out browser extension errors that don't affect our app
-    if (error.message?.includes('solana') || error.stack?.includes('chrome-extension')) {
-      console.warn('Browser extension error (ignored):', error.message)
+    const isExtensionError = (
+      error.message?.includes('solana') ||
+      error.message?.includes('Cannot redefine property') ||
+      error.message?.includes('ethereum') ||
+      error.message?.includes('web3') ||
+      error.stack?.includes('chrome-extension://') ||
+      error.stack?.includes('moz-extension://') ||
+      error.stack?.includes('safari-extension://') ||
+      error.stack?.includes('extension')
+    )
+    
+    if (isExtensionError) {
+      console.debug('Browser extension error (ignored):', error.message)
       this.setState({ hasError: false })
       return
     }
@@ -33,8 +44,18 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   render() {
     if (this.state.hasError && this.state.error) {
       // Don't show error UI for extension conflicts
-      if (this.state.error.message?.includes('solana') || 
-          this.state.error.stack?.includes('chrome-extension')) {
+      const isExtensionError = (
+        this.state.error.message?.includes('solana') ||
+        this.state.error.message?.includes('Cannot redefine property') ||
+        this.state.error.message?.includes('ethereum') ||
+        this.state.error.message?.includes('web3') ||
+        this.state.error.stack?.includes('chrome-extension://') ||
+        this.state.error.stack?.includes('moz-extension://') ||
+        this.state.error.stack?.includes('safari-extension://') ||
+        this.state.error.stack?.includes('extension')
+      )
+      
+      if (isExtensionError) {
         return this.props.children
       }
 

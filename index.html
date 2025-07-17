@@ -5,6 +5,40 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ClipForge - Automated Social Media Clipping</title>
+    
+    <!-- Prevent browser extension conflicts -->
+    <script>
+      // Defensive property management for browser extensions
+      (function() {
+        const originalDefineProperty = Object.defineProperty;
+        const extensionProps = ['solana', 'ethereum', 'web3', 'phantom', 'metamask'];
+        
+        // Track already defined properties
+        const definedProps = new Set();
+        
+        Object.defineProperty = function(obj, prop, descriptor) {
+          // Handle extension property conflicts gracefully
+          if (obj === window && extensionProps.includes(prop)) {
+            if (definedProps.has(prop)) {
+              console.debug(`Extension property conflict prevented: ${prop}`);
+              return obj; // Silently ignore redefinition
+            }
+            definedProps.add(prop);
+          }
+          
+          try {
+            return originalDefineProperty.call(this, obj, prop, descriptor);
+          } catch (error) {
+            if (error.message && error.message.includes('Cannot redefine property')) {
+              console.debug(`Property redefinition prevented: ${prop}`);
+              return obj;
+            }
+            throw error;
+          }
+        };
+      })();
+    </script>
+    
     <!-- CRITICAL: DO NOT REMOVE/MODIFY THIS COMMENT OR THE SCRIPT BELOW -->
     <script src="https://blink.new/auto-engineer.js?projectId=clipforge-yhpcl51t" type="module"></script>
   </head>
