@@ -24,6 +24,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { videoService, type Clip } from '@/services/videoService'
+import { automationService } from '@/services/automationService'
 import { toast } from 'sonner'
 
 export function ReviewQueue() {
@@ -110,18 +111,23 @@ export function ReviewQueue() {
 
   const handlePostClip = async (clip: Clip, platforms: string[]) => {
     try {
-      // Simulate posting to platforms
-      const updatedClip = {
-        ...clip,
-        status: 'posted' as const,
-        postedPlatforms: platforms
+      const success = await automationService.postClipNow(clip.id, platforms)
+      
+      if (success) {
+        const updatedClip = {
+          ...clip,
+          status: 'posted' as const,
+          postedPlatforms: platforms
+        }
+
+        setClips(prevClips =>
+          prevClips.map(c => c.id === clip.id ? updatedClip : c)
+        )
+
+        toast.success(`Posted to ${platforms.join(', ')}!`)
+      } else {
+        toast.error('Failed to post clip to some platforms')
       }
-
-      setClips(prevClips =>
-        prevClips.map(c => c.id === clip.id ? updatedClip : c)
-      )
-
-      toast.success(`Posted to ${platforms.join(', ')}!`)
     } catch (error) {
       toast.error('Failed to post clip')
       console.error('Error posting clip:', error)
