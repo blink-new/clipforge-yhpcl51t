@@ -3,6 +3,8 @@ import { Header } from '@/components/layout/Header'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { Dashboard } from '@/components/dashboard/Dashboard'
 import { UploadContent } from '@/components/upload/UploadContent'
+import { ReviewQueue } from '@/components/queue/ReviewQueue'
+import { Toaster } from '@/components/ui/sonner'
 import blink from '@/blink/client'
 
 function App() {
@@ -71,19 +73,7 @@ function App() {
       case 'upload':
         return <UploadContent />
       case 'queue':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-3xl font-bold tracking-tight">Review Queue</h2>
-              <p className="text-muted-foreground">
-                Review and manage generated clips before posting
-              </p>
-            </div>
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">Queue component coming soon...</p>
-            </div>
-          </div>
-        )
+        return <ReviewQueue />
       case 'automation':
         return (
           <div className="space-y-6">
@@ -140,6 +130,7 @@ function App() {
           {renderContent()}
         </main>
       </div>
+      <Toaster />
     </div>
   )
 }
